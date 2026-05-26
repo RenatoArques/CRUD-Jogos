@@ -1,0 +1,96 @@
+package com.template;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+//a
+public class JogoDAO {
+    private static final Logger logger = Logger.getLogger(JogoDAO.class.getName());
+
+    ArrayList<JogoDTO> listaJogos = new ArrayList<>();
+    //INCLUDE
+    public void cadastrarJogo(JogoDTO jogo) {
+
+        // Comando SQL com parmetros para evitar SQl injection
+        String sql = "INSERT INTO jogos (nome, genero, plataforma, preco) VALUES (?, ?, ?, ?)";
+
+        // try-with-resources: abre e fecha automaticamente a conexao e o PreparedStatement,
+        // evitando vazamento de recursos e deixando o codigo mais seguro e limpo.
+        try (Connection conn = Conexao.obterConexao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, jogo.getNome());
+            stmt.setString(2, jogo.getGenero());
+            stmt.setString(3, jogo.getPlataforma());
+            stmt.setDouble(4, jogo.getPreco());
+
+            stmt.executeUpdate(); // executa o incert
+
+
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Erro ao incerir", e);
+        }
+    }
+
+    //READ
+    public ArrayList<JogoDTO> listarJogos() {
+        String sql = "SELECT * FROM jogos";
+        //PreparedStatement e ResultSet evitam vazamento de recursos
+        //ResultSet devolve oque pegou no select
+        try (Connection conn = Conexao.obterConexao(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+
+            //Percorre os resultados retornados do banco
+            while (rs.next()) {
+                com.template.JogoDTO jogo = new com.template.JogoDTO();
+                jogo.setId(rs.getInt("id"));
+                jogo.setNome(rs.getString("nome"));
+                jogo.setGenero(rs.getString("genero"));
+                jogo.setPlataforma(rs.getString("plataforma"));
+                jogo.setPreco(rs.getDouble("preco"));
+
+            }
+
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Erro ao lisrar", e);
+        }
+        return listarJogos();
+    }
+
+    //UPDATE
+    public void atualizarJogo(JogoDTO jogo) {
+        String sql = "UPDATE jogos SET nome=?, genero=?, plataforma=?, preco=? WHERE id=?";
+
+        try (Connection conn = Conexao.obterConexao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            // Atualiza os valores com base no ID
+            stmt.setString(1, jogo.getNome());
+            stmt.setString(2, jogo.getGenero());
+            stmt.setString(3, jogo.getPlataforma());
+            stmt.setDouble(4, jogo.getPreco());
+            stmt.setInt(5, jogo.getId());
+
+            stmt.executeUpdate();
+
+
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Erro ao update", e);
+        }
+    }
+
+    //DELETE
+    public void excluirJogo(int id) {
+        String sql = "DELETE FROM jogos WHERE id=?";
+
+        try (Connection conn = Conexao.obterConexao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Erro ao deletar", e);
+        }
+    }
+}
