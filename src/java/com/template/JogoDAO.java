@@ -51,12 +51,13 @@ public class JogoDAO {
                 jogo.setPlataforma(rs.getString("plataforma"));
                 jogo.setPreco(rs.getDouble("preco"));
 
+                listaJogos.add(jogo);
             }
 
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Erro ao lisrar", e);
         }
-        return listarJogos();
+        return listaJogos;
     }
 
     //UPDATE

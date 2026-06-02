@@ -23,10 +23,10 @@
             <Label layoutX="78.0" layoutY="161.0" text="Plataforma:" textFill="WHITE" />
             <Label layoutX="57.0" layoutY="66.0" text=" Nome do jogo:" textFill="WHITE" />
             <Label layoutX="120.0" layoutY="34.0" text="ID:" textFill="WHITE" />
-            <Button fx:id="btSalvar" layoutX="488.0" layoutY="29.0" mnemonicParsing="false" text="Salvar" />
-            <Button fx:id="btEditar" layoutX="488.0" layoutY="65.0" mnemonicParsing="false" text="Editar" />
+            <Button fx:id="btnSalvar" layoutX="488.0" layoutY="29.0" mnemonicParsing="false" text="Salvar" />
+            <Button fx:id="btnEditar" layoutX="488.0" layoutY="65.0" mnemonicParsing="false" text="Editar" />
             <Button fx:id="btAdicionar" layoutX="479.0" layoutY="101.0" mnemonicParsing="false" text="Adicionar" />
-            <Button fx:id="btExcluir" layoutX="487.0" layoutY="136.0" mnemonicParsing="false" text="Excluir" />
+            <Button fx:id="btnExcluir" layoutX="487.0" layoutY="136.0" mnemonicParsing="false" text="Excluir" />
          </children>
       </Pane>
       <TableView fx:id="tblJogos" layoutX="47.0" layoutY="282.0" prefHeight="200.0" prefWidth="500.0">

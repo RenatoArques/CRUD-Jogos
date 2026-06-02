@@ -1,22 +1,23 @@
 package com.template;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.ArrayList;
 
 
 public class MainController
 {
-    @FXML private Button btSalvar;
-    @FXML private Button btEditar;
-    @FXML private Button btExcluir;
-    @FXML private Button btAdicionar;
-    @FXML private Button btLimpar;
+    @FXML private Button btnSalvar;
+    @FXML private Button btnEditar;
+    @FXML private Button btnExcluir;
+    @FXML private Button btnLimpar;
     @FXML private TextField txfId;
     @FXML private TextField txfNome;
     @FXML private TextField txfGenero;
@@ -32,24 +33,35 @@ public class MainController
     @FXML
     private void carregarJogo(){
         JogoDAO objJogogoDAO = new JogoDAO();
-
+        ArrayList<JogoDTO> listaJogos = objJogogoDAO.listarJogos();
+        tblJogos.setItems(FXCollections.observableArrayList(listaJogos));
     }
 
-
-
     @FXML
-    private void BtSalvar(ActionEvent event){
-        int id = Integer.parseInt(txfId.getText());
+    private void btnSalvarAction(ActionEvent event){
+
         String nome = txfNome.getText();
         String genero = txfGenero.getText();
-        double preco = Double.parseDouble(txfPreco.getText());
         String plataforma = txfPlataforma.getText();
+        double preco = Double.parseDouble(txfPreco.getText());
+        JogoDTO jogoDTO = new JogoDTO();
 
+        jogoDTO.setNome(nome);
+        jogoDTO.setGenero(genero);
+        jogoDTO.setPlataforma(plataforma);
+        jogoDTO.setPreco(preco);
+
+        JogoDAO jogoDAO = new JogoDAO();
+        jogoDAO.cadastrarJogo(jogoDTO);
+        carregarJogo();
+        btnLimparAction(event);
     }
 
 
+
+
     @FXML
-    private void btLimpar(ActionEvent event){
+    private void btnLimparAction(ActionEvent event){
         txfId.clear();
         txfNome.clear();
         txfGenero.clear();
@@ -58,25 +70,60 @@ public class MainController
     }
 
     @FXML
-    private void btExcluir(ActionEvent event){
+    private void carregarCampos() {
+        JogoDTO objJogoDTO = tblJogos.getSelectionModel().getSelectedItem();
 
+        if (objJogoDTO != null){
+            txfId.setText(String.valueOf(objJogoDTO.getId()));
+            txfNome.setText(objJogoDTO.getNome());
+            txfPlataforma.setText(objJogoDTO.getPlataforma());
+            txfPreco.setText(String.valueOf(objJogoDTO.getPreco()));
+            txfGenero.setText(objJogoDTO.getGenero());
+        }
     }
 
     @FXML
-    private void btAdicionar(ActionEvent event){
+    private void btnExcluirAction(ActionEvent event){
 
+        JogoDTO jogoSelecionado = tblJogos.getSelectionModel().getSelectedItem();
+
+        if (jogoSelecionado != null) {
+            JogoDAO objJogoDAO = new JogoDAO();
+            objJogoDAO.excluirJogo(jogoSelecionado.getId());
+            carregarJogo();
+        }
     }
+
 
     @FXML
-    private void btEditar(ActionEvent event){
+    private void btnEditarAction(ActionEvent event){
 
+        int id = Integer.parseInt(txfId.getText());
+        String nome = txfNome.getText();
+        String genero = txfGenero.getText();
+        double preco = Double.parseDouble(txfPreco.getText());
+        String plataforma = txfPlataforma.getText();
+
+        JogoDTO jogoDTO = new JogoDTO();
+        jogoDTO.setId(id);
+        jogoDTO.setNome(nome);
+        jogoDTO.setGenero(genero);
+        jogoDTO.setPreco(preco);
+        jogoDTO.setPlataforma(plataforma);
+
+        JogoDAO objJogoDAO = new JogoDAO();
+        objJogoDAO.atualizarJogo(jogoDTO);
+        carregarJogo();
+        btnLimparAction(event);
     }
-
-
 
     @FXML
     private void initialize()
     {
-        System.out.println("FXML loaded successfully!");
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+        colGenero.setCellValueFactory(new PropertyValueFactory<>("genero"));
+        colPreco.setCellValueFactory(new PropertyValueFactory<>("preco"));
+        colPlataforma.setCellValueFactory(new PropertyValueFactory<>("plataforma"));
     }
 }
