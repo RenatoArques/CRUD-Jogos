@@ -3,10 +3,7 @@ package com.template;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.ArrayList;
@@ -23,6 +20,8 @@ public class MainController
     @FXML private TextField txfGenero;
     @FXML private TextField txfPlataforma;
     @FXML private TextField txfPreco;
+    @FXML private Label lblMensagem;
+    @FXML private Label lblTotal;
     @FXML private TableView<JogoDTO> tblJogos;
     @FXML private TableColumn<JogoDTO, Integer> colId;
     @FXML private TableColumn<JogoDTO, String> colNome;
@@ -35,10 +34,19 @@ public class MainController
         JogoDAO objJogogoDAO = new JogoDAO();
         ArrayList<JogoDTO> listaJogos = objJogogoDAO.listarJogos();
         tblJogos.setItems(FXCollections.observableArrayList(listaJogos));
+        lblTotal.setText("Total de jogos: " + listaJogos.size());
     }
 
     @FXML
     private void btnSalvarAction(ActionEvent event){
+
+        if(txfNome.getText().isEmpty() ||
+                txfGenero.getText().isEmpty() ||
+                txfPreco.getText().isEmpty()) {
+
+            lblMensagem.setText("Preencha todos os campos!");
+            return;
+        }
 
         String nome = txfNome.getText();
         String genero = txfGenero.getText();
@@ -54,6 +62,7 @@ public class MainController
         JogoDAO jogoDAO = new JogoDAO();
         jogoDAO.cadastrarJogo(jogoDTO);
         carregarJogo();
+        lblMensagem.setText("");
         btnLimparAction(event);
     }
 
@@ -87,10 +96,25 @@ public class MainController
 
         JogoDTO jogoSelecionado = tblJogos.getSelectionModel().getSelectedItem();
 
-        if (jogoSelecionado != null) {
+        if (jogoSelecionado == null) {
+            lblMensagem.setText("Selecione um jogo para excluir!");
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmacao");
+        alert.setHeaderText("Excluir jogo");
+        alert.setContentText("Deseja realmente excluir o jogo " + jogoSelecionado.getNome() + "?");
+
+        if(alert.showAndWait().get() == ButtonType.OK){
+
             JogoDAO objJogoDAO = new JogoDAO();
             objJogoDAO.excluirJogo(jogoSelecionado.getId());
+
             carregarJogo();
+            btnLimparAction(event);
+
+            lblMensagem.setText("Jogo excluido com sucesso!");
         }
     }
 
