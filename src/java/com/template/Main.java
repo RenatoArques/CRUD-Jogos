@@ -11,9 +11,10 @@ public class Main extends Application
     public void start(Stage stage) throws Exception
     {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("main.fxml"));
-        Scene scene = new Scene(loader.load(),600,400);
+        Scene scene = new Scene(loader.load(),657,541);
 
         stage.setTitle("CRUD JOGOS");
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }
