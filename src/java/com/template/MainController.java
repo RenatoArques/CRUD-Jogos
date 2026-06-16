@@ -40,10 +40,7 @@ public class MainController
     @FXML
     private void btnSalvarAction(ActionEvent event){
 
-        if(txfNome.getText().isEmpty() ||
-                txfGenero.getText().isEmpty() ||
-                txfPreco.getText().isEmpty()) {
-
+        if(txfNome.getText().isEmpty() || txfGenero.getText().isEmpty() || txfPreco.getText().isEmpty()) {
             lblMensagem.setText("Preencha todos os campos!");
             return;
         }
@@ -65,9 +62,6 @@ public class MainController
         lblMensagem.setText("");
         btnLimparAction(event);
     }
-
-
-
 
     @FXML
     private void btnLimparAction(ActionEvent event){
@@ -117,7 +111,6 @@ public class MainController
             lblMensagem.setText("Jogo excluido com sucesso!");
         }
     }
-
 
     @FXML
     private void btnEditarAction(ActionEvent event){
