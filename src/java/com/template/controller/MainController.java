@@ -1,5 +1,8 @@
-package com.template;
+package com.template.controller;
 
+import com.template.model.dao.JogoDAO;
+import com.template.model.dto.JogoDTO;
+import com.template.util.DialogUtil;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,11 +18,11 @@ public class MainController
     @FXML private Button btnEditar;
     @FXML private Button btnExcluir;
     @FXML private Button btnLimpar;
-    @FXML private TextField txfId;
-    @FXML private TextField txfNome;
-    @FXML private TextField txfGenero;
-    @FXML private TextField txfPlataforma;
-    @FXML private TextField txfPreco;
+    @FXML private TextField txtId;
+    @FXML private TextField txtNome;
+    @FXML private TextField txtGenero;
+    @FXML private TextField txtPlataforma;
+    @FXML private TextField txtPreco;
     @FXML private Label lblMensagem;
     @FXML private Label lblTotal;
     @FXML private TableView<JogoDTO> tblJogos;
@@ -40,15 +43,15 @@ public class MainController
     @FXML
     private void btnSalvarAction(ActionEvent event){
 
-        if(txfNome.getText().isEmpty() || txfGenero.getText().isEmpty() || txfPreco.getText().isEmpty()) {
+        if(txtNome.getText().isEmpty() || txtGenero.getText().isEmpty() || txtPreco.getText().isEmpty()) {
             lblMensagem.setText("Preencha todos os campos!");
             return;
         }
 
-        String nome = txfNome.getText();
-        String genero = txfGenero.getText();
-        String plataforma = txfPlataforma.getText();
-        double preco = Double.parseDouble(txfPreco.getText());
+        String nome = txtNome.getText();
+        String genero = txtGenero.getText();
+        String plataforma = txtPlataforma.getText();
+        double preco = Double.parseDouble(txtPreco.getText());
         JogoDTO jogoDTO = new JogoDTO();
 
         jogoDTO.setNome(nome);
@@ -65,11 +68,11 @@ public class MainController
 
     @FXML
     private void btnLimparAction(ActionEvent event){
-        txfId.clear();
-        txfNome.clear();
-        txfGenero.clear();
-        txfPreco.clear();
-        txfPlataforma.clear();
+        txtId.clear();
+        txtNome.clear();
+        txtGenero.clear();
+        txtPreco.clear();
+        txtPlataforma.clear();
     }
 
     @FXML
@@ -77,11 +80,11 @@ public class MainController
         JogoDTO objJogoDTO = tblJogos.getSelectionModel().getSelectedItem();
 
         if (objJogoDTO != null){
-            txfId.setText(String.valueOf(objJogoDTO.getId()));
-            txfNome.setText(objJogoDTO.getNome());
-            txfPlataforma.setText(objJogoDTO.getPlataforma());
-            txfPreco.setText(String.valueOf(objJogoDTO.getPreco()));
-            txfGenero.setText(objJogoDTO.getGenero());
+            txtId.setText(String.valueOf(objJogoDTO.getId()));
+            txtNome.setText(objJogoDTO.getNome());
+            txtPlataforma.setText(objJogoDTO.getPlataforma());
+            txtPreco.setText(String.valueOf(objJogoDTO.getPreco()));
+            txtGenero.setText(objJogoDTO.getGenero());
         }
     }
 
@@ -95,12 +98,7 @@ public class MainController
             return;
         }
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmacao");
-        alert.setHeaderText("Excluir jogo");
-        alert.setContentText("Deseja realmente excluir o jogo " + jogoSelecionado.getNome() + "?");
-
-        if(alert.showAndWait().get() == ButtonType.OK){
+        if (DialogUtil.confirmacao("Deseja realmente excluir o jogo " + jogoSelecionado.getNome() + "?")) {
 
             JogoDAO objJogoDAO = new JogoDAO();
             objJogoDAO.excluirJogo(jogoSelecionado.getId());
@@ -108,18 +106,18 @@ public class MainController
             carregarJogo();
             btnLimparAction(event);
 
-            lblMensagem.setText("Jogo excluido com sucesso!");
+            lblMensagem.setText("Jogo excluído com sucesso!");
         }
     }
 
     @FXML
     private void btnEditarAction(ActionEvent event){
 
-        int id = Integer.parseInt(txfId.getText());
-        String nome = txfNome.getText();
-        String genero = txfGenero.getText();
-        double preco = Double.parseDouble(txfPreco.getText());
-        String plataforma = txfPlataforma.getText();
+        int id = Integer.parseInt(txtId.getText());
+        String nome = txtNome.getText();
+        String genero = txtGenero.getText();
+        double preco = Double.parseDouble(txtPreco.getText());
+        String plataforma = txtPlataforma.getText();
 
         JogoDTO jogoDTO = new JogoDTO();
         jogoDTO.setId(id);

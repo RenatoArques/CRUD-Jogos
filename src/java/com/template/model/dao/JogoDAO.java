@@ -1,4 +1,7 @@
-package com.template;
+package com.template.model.dao;
+
+import com.template.model.Conexao;
+import com.template.model.dto.JogoDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,7 +47,7 @@ public class JogoDAO {
 
             //Percorre os resultados retornados do banco
             while (rs.next()) {
-                com.template.JogoDTO jogo = new com.template.JogoDTO();
+                JogoDTO jogo = new JogoDTO();
                 jogo.setId(rs.getInt("id"));
                 jogo.setNome(rs.getString("nome"));
                 jogo.setGenero(rs.getString("genero"));
