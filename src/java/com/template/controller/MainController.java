@@ -11,6 +11,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.ArrayList;
 
+import static com.template.validator.jogoValidator.validarJogo;
+
 
 public class MainController
 {
@@ -43,7 +45,8 @@ public class MainController
     @FXML
     private void btnSalvarAction(ActionEvent event){
 
-        if(txtNome.getText().isEmpty() || txtGenero.getText().isEmpty() || txtPreco.getText().isEmpty()) {
+        //validar campo de pesquisa
+        if(!validarJogo(txtNome.getText(), txtGenero.getText(), txtPreco.getText())){
             lblMensagem.setText("Preencha todos os campos!");
             return;
         }
@@ -52,6 +55,8 @@ public class MainController
         String genero = txtGenero.getText();
         String plataforma = txtPlataforma.getText();
         double preco = Double.parseDouble(txtPreco.getText());
+
+
         JogoDTO jogoDTO = new JogoDTO();
 
         jogoDTO.setNome(nome);
