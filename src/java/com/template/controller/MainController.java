@@ -1,6 +1,6 @@
 package com.template.controller;
 
-import com.template.model.dao.JogoDAO;
+import com.template.services.JogoServices;
 import com.template.model.dto.JogoDTO;
 import com.template.util.DialogUtil;
 import javafx.collections.FXCollections;
@@ -11,11 +11,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.ArrayList;
 
-import static com.template.validator.jogoValidator.validarJogo;
+public class MainController {
 
-
-public class MainController
-{
     @FXML private Button btnSalvar;
     @FXML private Button btnEditar;
     @FXML private Button btnExcluir;
@@ -34,57 +31,84 @@ public class MainController
     @FXML private TableColumn<JogoDTO, Double> colPreco;
     @FXML private TableColumn<JogoDTO, String> colPlataforma;
 
+    private final JogoServices jogoService = new JogoServices();
+
     @FXML
-    private void carregarJogo(){
-        JogoDAO objJogogoDAO = new JogoDAO();
-        ArrayList<JogoDTO> listaJogos = objJogogoDAO.listarJogos();
+    private void carregarJogo() {
+        ArrayList<JogoDTO> listaJogos = jogoService.listar();
         tblJogos.setItems(FXCollections.observableArrayList(listaJogos));
         lblTotal.setText("Total de jogos: " + listaJogos.size());
     }
 
     @FXML
-    private void btnSalvarAction(ActionEvent event){
+    private void btnSalvarAction(ActionEvent event) {
+        try {
+            JogoDTO jogoDTO = new JogoDTO();
+            jogoDTO.setNome(txtNome.getText());
+            jogoDTO.setGenero(txtGenero.getText());
+            jogoDTO.setPlataforma(txtPlataforma.getText());
+            jogoDTO.setPreco(converterPreco(txtPreco.getText()));
 
-        //validar campo de pesquisa
-        if(!validarJogo(txtNome.getText(), txtGenero.getText(), txtPreco.getText())){
-            lblMensagem.setText("Preencha todos os campos!");
-            return;
+            jogoService.cadastrar(jogoDTO);
+
+            carregarJogo();
+            btnLimparAction(event);
+            lblMensagem.setText("Jogo cadastrado com sucesso!");
+        } catch (IllegalArgumentException e) {
+            lblMensagem.setText(e.getMessage());
         }
-
-        String nome = txtNome.getText();
-        String genero = txtGenero.getText();
-        String plataforma = txtPlataforma.getText();
-        double preco = Double.parseDouble(txtPreco.getText());
-
-
-        JogoDTO jogoDTO = new JogoDTO();
-
-        jogoDTO.setNome(nome);
-        jogoDTO.setGenero(genero);
-        jogoDTO.setPlataforma(plataforma);
-        jogoDTO.setPreco(preco);
-
-        JogoDAO jogoDAO = new JogoDAO();
-        jogoDAO.cadastrarJogo(jogoDTO);
-        carregarJogo();
-        lblMensagem.setText("");
-        btnLimparAction(event);
     }
 
     @FXML
-    private void btnLimparAction(ActionEvent event){
-        txtId.clear();
-        txtNome.clear();
-        txtGenero.clear();
-        txtPreco.clear();
-        txtPlataforma.clear();
+    private void btnEditarAction(ActionEvent event) {
+        try {
+            if (txtId.getText() == null || txtId.getText().isEmpty()) {
+                throw new IllegalArgumentException("Selecione um jogo na tabela para editar.");
+            }
+
+            JogoDTO jogoDTO = new JogoDTO();
+            jogoDTO.setId(Integer.parseInt(txtId.getText()));
+            jogoDTO.setNome(txtNome.getText());
+            jogoDTO.setGenero(txtGenero.getText());
+            jogoDTO.setPlataforma(txtPlataforma.getText());
+            jogoDTO.setPreco(converterPreco(txtPreco.getText()));
+
+            jogoService.atualizar(jogoDTO);
+
+            carregarJogo();
+            btnLimparAction(event);
+            lblMensagem.setText("Jogo atualizado com sucesso!");
+        } catch (IllegalArgumentException e) {
+            lblMensagem.setText(e.getMessage());
+        }
+    }
+
+    @FXML
+    private void btnExcluirAction(ActionEvent event) {
+        JogoDTO jogoSelecionado = tblJogos.getSelectionModel().getSelectedItem();
+
+        if (jogoSelecionado == null) {
+            lblMensagem.setText("Selecione um jogo para excluir!");
+            return;
+        }
+
+        if (DialogUtil.confirmacao("Deseja realmente excluir o jogo " + jogoSelecionado.getNome() + "?")) {
+            try {
+                jogoService.excluir(jogoSelecionado.getId());
+                carregarJogo();
+                btnLimparAction(event);
+                lblMensagem.setText("Jogo excluído com sucesso!");
+            } catch (IllegalArgumentException e) {
+                lblMensagem.setText(e.getMessage());
+            }
+        }
     }
 
     @FXML
     private void carregarCampos() {
         JogoDTO objJogoDTO = tblJogos.getSelectionModel().getSelectedItem();
 
-        if (objJogoDTO != null){
+        if (objJogoDTO != null) {
             txtId.setText(String.valueOf(objJogoDTO.getId()));
             txtNome.setText(objJogoDTO.getNome());
             txtPlataforma.setText(objJogoDTO.getPlataforma());
@@ -94,56 +118,30 @@ public class MainController
     }
 
     @FXML
-    private void btnExcluirAction(ActionEvent event){
-
-        JogoDTO jogoSelecionado = tblJogos.getSelectionModel().getSelectedItem();
-
-        if (jogoSelecionado == null) {
-            lblMensagem.setText("Selecione um jogo para excluir!");
-            return;
-        }
-
-        if (DialogUtil.confirmacao("Deseja realmente excluir o jogo " + jogoSelecionado.getNome() + "?")) {
-
-            JogoDAO objJogoDAO = new JogoDAO();
-            objJogoDAO.excluirJogo(jogoSelecionado.getId());
-
-            carregarJogo();
-            btnLimparAction(event);
-
-            lblMensagem.setText("Jogo excluído com sucesso!");
-        }
+    private void btnLimparAction(ActionEvent event) {
+        txtId.clear();
+        txtNome.clear();
+        txtGenero.clear();
+        txtPreco.clear();
+        txtPlataforma.clear();
+        lblMensagem.setText("");
     }
 
     @FXML
-    private void btnEditarAction(ActionEvent event){
-
-        int id = Integer.parseInt(txtId.getText());
-        String nome = txtNome.getText();
-        String genero = txtGenero.getText();
-        double preco = Double.parseDouble(txtPreco.getText());
-        String plataforma = txtPlataforma.getText();
-
-        JogoDTO jogoDTO = new JogoDTO();
-        jogoDTO.setId(id);
-        jogoDTO.setNome(nome);
-        jogoDTO.setGenero(genero);
-        jogoDTO.setPreco(preco);
-        jogoDTO.setPlataforma(plataforma);
-
-        JogoDAO objJogoDAO = new JogoDAO();
-        objJogoDAO.atualizarJogo(jogoDTO);
-        carregarJogo();
-        btnLimparAction(event);
-    }
-
-    @FXML
-    private void initialize()
-    {
+    private void initialize() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colGenero.setCellValueFactory(new PropertyValueFactory<>("genero"));
         colPreco.setCellValueFactory(new PropertyValueFactory<>("preco"));
         colPlataforma.setCellValueFactory(new PropertyValueFactory<>("plataforma"));
+    }
+
+    // Auxiliar para tratar conversão de texto para número sem quebrar a tela
+    private double converterPreco(String precoTexto) {
+        try {
+            return Double.parseDouble(precoTexto.replace(",", "."));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("O preço deve ser um valor numérico válido.");
+        }
     }
 }

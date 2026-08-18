@@ -10,19 +10,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-//a
+
 public class JogoDAO {
     private static final Logger logger = Logger.getLogger(JogoDAO.class.getName());
 
-    ArrayList<JogoDTO> listaJogos = new ArrayList<>();
-    //INCLUDE
+    // INCLUDE
     public void cadastrarJogo(JogoDTO jogo) {
 
-        // Comando SQL com parmetros para evitar SQl injection
         String sql = "INSERT INTO jogos (nome, genero, plataforma, preco) VALUES (?, ?, ?, ?)";
 
-        // try-with-resources: abre e fecha automaticamente a conexao e o PreparedStatement,
-        // evitando vazamento de recursos e deixando o codigo mais seguro e limpo.
         try (Connection conn = Conexao.obterConexao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, jogo.getNome());
@@ -30,22 +26,22 @@ public class JogoDAO {
             stmt.setString(3, jogo.getPlataforma());
             stmt.setDouble(4, jogo.getPreco());
 
-            stmt.executeUpdate(); // executa o incert
-
+            stmt.executeUpdate();
 
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Erro ao incerir", e);
+            logger.log(Level.SEVERE, "Erro ao inserir", e);
         }
     }
 
-    //READ
+    // READ
     public ArrayList<JogoDTO> listarJogos() {
+        // A lista foi movida para DENTRO do método (variável local)
+        ArrayList<JogoDTO> listaJogos = new ArrayList<>();
+
         String sql = "SELECT * FROM jogos";
-        //PreparedStatement e ResultSet evitam vazamento de recursos
-        //ResultSet devolve oque pegou no select
+
         try (Connection conn = Conexao.obterConexao(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
-            //Percorre os resultados retornados do banco
             while (rs.next()) {
                 JogoDTO jogo = new JogoDTO();
                 jogo.setId(rs.getInt("id"));
@@ -58,18 +54,17 @@ public class JogoDAO {
             }
 
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Erro ao lisrar", e);
+            logger.log(Level.SEVERE, "Erro ao listar", e);
         }
         return listaJogos;
     }
 
-    //UPDATE
+    // UPDATE
     public void atualizarJogo(JogoDTO jogo) {
         String sql = "UPDATE jogos SET nome=?, genero=?, plataforma=?, preco=? WHERE id=?";
 
         try (Connection conn = Conexao.obterConexao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Atualiza os valores com base no ID
             stmt.setString(1, jogo.getNome());
             stmt.setString(2, jogo.getGenero());
             stmt.setString(3, jogo.getPlataforma());
@@ -78,13 +73,12 @@ public class JogoDAO {
 
             stmt.executeUpdate();
 
-
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Erro ao update", e);
         }
     }
 
-    //DELETE
+    // DELETE
     public void excluirJogo(int id) {
         String sql = "DELETE FROM jogos WHERE id=?";
 
