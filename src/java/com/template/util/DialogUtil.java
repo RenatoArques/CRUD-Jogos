@@ -15,4 +15,12 @@ public class DialogUtil {
         Optional<ButtonType> resultado = alert.showAndWait();
         return resultado.isPresent() && resultado.get() == ButtonType.OK;
     }
+
+    public static void showWarning(String mensagem) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Aviso");
+        alert.setHeaderText("Atenção");
+        alert.setContentText(mensagem);
+        alert.showAndWait();
+    }
 }

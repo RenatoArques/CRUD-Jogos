@@ -3,6 +3,7 @@ package com.template.controller;
 import com.template.services.JogoServices;
 import com.template.model.dto.JogoDTO;
 import com.template.util.DialogUtil;
+import com.template.validator.JogoValidator;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -42,6 +43,18 @@ public class MainController {
 
     @FXML
     private void btnSalvarAction(ActionEvent event) {
+
+        boolean valido = JogoValidator.validarJogo(
+                txtNome.getText(),
+                txtGenero.getText(),
+                txtPreco.getText(),
+                txtPlataforma.getText()
+        );
+
+        if (!valido) {
+            return;
+        }
+
         try {
             JogoDTO jogoDTO = new JogoDTO();
             jogoDTO.setNome(txtNome.getText());
@@ -64,6 +77,17 @@ public class MainController {
         try {
             if (txtId.getText() == null || txtId.getText().isEmpty()) {
                 throw new IllegalArgumentException("Selecione um jogo na tabela para editar.");
+            }
+
+            boolean valido = JogoValidator.validarJogo(
+                    txtNome.getText(),
+                    txtGenero.getText(),
+                    txtPreco.getText(),
+                    txtPlataforma.getText()
+            );
+
+            if (!valido) {
+                return;
             }
 
             JogoDTO jogoDTO = new JogoDTO();
