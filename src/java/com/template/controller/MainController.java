@@ -3,6 +3,7 @@ package com.template.controller;
 import com.template.services.JogoServices;
 import com.template.model.dto.JogoDTO;
 import com.template.util.DialogUtil;
+import com.template.validator.IJogoValidator;
 import com.template.validator.JogoValidator;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -13,6 +14,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.ArrayList;
 
 public class MainController {
+
+    private final IJogoValidator gameValidator;
+
+    public MainController(IJogoValidator gameValidator) {
+        this.gameValidator = gameValidator;
+    }
 
     @FXML private Button btnSalvar;
     @FXML private Button btnEditar;
@@ -44,7 +51,7 @@ public class MainController {
     @FXML
     private void btnSalvarAction(ActionEvent event) {
 
-        boolean valido = JogoValidator.validarJogo(
+        boolean valido = gameValidator.validarJogo(
                 txtNome.getText(),
                 txtGenero.getText(),
                 txtPreco.getText(),
@@ -79,7 +86,7 @@ public class MainController {
                 throw new IllegalArgumentException("Selecione um jogo na tabela para editar.");
             }
 
-            boolean valido = JogoValidator.validarJogo(
+            boolean valido = gameValidator.validarJogo(
                     txtNome.getText(),
                     txtGenero.getText(),
                     txtPreco.getText(),
